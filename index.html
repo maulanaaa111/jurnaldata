@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Psychology & Mental Journal - Interactive</title>
+    <title>Trading Journal - Secure Access</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -13,9 +13,12 @@
             --bg-dark: #0f172a;
             --card-bg: #1e293b;
             --primary: #10b981;
+            --secondary: #0ea5e9;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
             --accent: #334155;
+            --danger: #ef4444;
+            --input-bg: #020617;
         }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
@@ -27,13 +30,37 @@
             font-family: 'Urbanist', sans-serif;
             color: var(--text-main);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            min-height: 100vh;
+        }
+
+        /* AUTH SCREEN */
+        #auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: #020617;
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--accent);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .auth-header h2 { color: var(--primary); margin-bottom: 10px; }
+        .auth-header p { color: var(--text-dim); margin-bottom: 30px; font-size: 14px; }
+
+        .auth-form { display: flex; flex-direction: column; gap: 15px; }
+        
+        /* APP CONTENT */
+        #app-content {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 20px;
         }
 
         .container {
-            max-width: 1000px;
-            width: 100%;
             background: #020617;
             padding: 40px;
             border-radius: 24px;
@@ -41,319 +68,330 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .header-section {
-            text-align: center;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 30px;
-            margin-bottom: 30px;
-        }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 30px; background: var(--card-bg); padding: 5px; border-radius: 12px; border: 1px solid var(--accent); }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-dim); font-weight: 700; cursor: pointer; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .tab-btn.active { background: var(--primary); color: #020617; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        h1 { font-size: 36px; margin: 0; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
-        .quote { font-style: italic; color: var(--text-dim); margin-top: 10px; }
-
-        /* FORM CONTROLS */
-        .grid-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-weight: 600; color: var(--text-dim); font-size: 14px; text-transform: uppercase; }
+        .header-section { text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 30px; margin-bottom: 30px; }
+        h1 { font-size: 32px; margin: 0; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
         
-        input[type="text"], input[type="date"], select, textarea {
-            background: var(--card-bg);
-            border: 1px solid var(--accent);
-            padding: 12px;
-            border-radius: 8px;
-            color: white;
-            font-family: inherit;
-            width: 100%;
-        }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
+        label { font-weight: 600; color: var(--text-dim); font-size: 13px; text-transform: uppercase; }
+        
+        input, select, textarea { background: var(--card-bg); border: 1px solid var(--accent); padding: 12px; border-radius: 8px; color: white; font-family: inherit; width: 100%; }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
 
-        textarea { min-height: 80px; resize: vertical; }
+        .section-card { background: rgba(30, 41, 59, 0.5); padding: 25px; border-radius: 16px; margin-bottom: 25px; border-left: 5px solid var(--primary); text-align: left; }
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
+        .check-item { display: flex; align-items: center; gap: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .check-item input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
-        /* CHECKBOX CUSTOM */
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
-        }
+        .btn { padding: 12px 20px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary { background: var(--primary); color: #020617; width: 100%; }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-google { background: white; color: #334155; width: 100%; border: 1px solid #ddd; margin-top: 10px; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
 
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--card-bg);
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .divider { margin: 20px 0; display: flex; align-items: center; color: var(--text-dim); font-size: 12px; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--accent); margin: 0 10px; }
 
-        .check-item:hover { background: var(--accent); }
-        .check-item input { accent-color: var(--primary); width: 18px; height: 18px; }
+        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px; color: var(--text-dim); }
 
-        /* SECTIONS */
-        .section-card {
-            background: rgba(30, 41, 59, 0.5);
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            border-left: 5px solid var(--primary);
-        }
-
-        .section-card h2 {
-            margin-top: 0;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary);
-        }
-
-        .two-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        /* ACTIONS */
-        .actions {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            transition: 0.3s;
-        }
-
-        .btn-print { background: var(--primary); color: #020617; }
-        .btn-clear { background: #ef4444; color: white; }
-        .btn:hover { transform: translateY(-3px); opacity: 0.9; }
-
-        /* RATING */
-        .rating-group {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .rating-item input {
-            width: 50px;
-            text-align: center;
-            background: var(--primary);
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            color: #020617;
-        }
-
-        @media print {
-            .actions, .btn-clear { display: none; }
-            body { padding: 0; background: white; }
-            .container { border: none; box-shadow: none; max-width: 100%; width: 100%; color: black; background: white; }
-            input, textarea, select { color: black !important; background: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; }
-            .section-card { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; color: black; }
-            h1, h2, label { color: #0f172a !important; }
-            .check-item { background: #f1f5f9 !important; border: 1px solid #e2e8f0; color: black; }
-        }
-
-        @media (max-width: 768px) {
-            .two-col { grid-template-columns: 1fr; }
-            .container { padding: 20px; }
-        }
+        @media print { .nav-tabs, .actions, .user-info { display: none; } }
     </style>
 </head>
 <body>
 
-    <div class="container" id="journalContent">
-        <header class="header-section">
-            <h1>Trading Psychology & Mental Journal</h1>
-            <p class="quote">"Mindset is your edge. Master your mind, master the market."</p>
-        </header>
-
-        <!-- INFO DASAR -->
-        <div class="grid-meta">
-            <div class="form-group">
-                <label>Tanggal</label>
-                <input type="date">
-            </div>
-            <div class="form-group">
-                <label>Sesi</label>
-                <select>
-                    <option>Pilih Sesi</option>
-                    <option>ASIA</option>
-                    <option>LONDON</option>
-                    <option>NEW YORK</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Market</label>
-                <input type="text" placeholder="XAUUSD, BTC, dll">
-            </div>
+    <!-- SCREEN 1: LOGIN/REGISTER -->
+    <div id="auth-container">
+        <div class="auth-header">
+            <i class="fa-solid fa-brain fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
+            <h2 id="auth-title">Jurnal Psikologi</h2>
+            <p id="auth-subtitle">Amankan data trading dan mental Anda</p>
         </div>
 
-        <div class="grid-meta">
+        <form class="auth-form" id="authForm">
             <div class="form-group">
-                <label>Kualitas Tidur</label>
-                <select>
-                    <option>Kurang</option>
-                    <option>Cukup</option>
-                    <option>Sangat Baik</option>
-                </select>
+                <label>Email</label>
+                <input type="email" id="authEmail" placeholder="email@contoh.com" required>
             </div>
             <div class="form-group">
-                <label>Level Energi</label>
-                <select>
-                    <option>Rendah</option>
-                    <option>Sedang</option>
-                    <option>Tinggi</option>
-                </select>
+                <label>Password</label>
+                <input type="password" id="authPassword" placeholder="••••••••" required>
             </div>
+            <button type="submit" class="btn btn-primary" id="authBtn">Masuk</button>
+        </form>
+
+        <div class="divider">ATAU</div>
+
+        <button class="btn btn-google" onclick="handleGoogleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18" alt="Google">
+            Login dengan Google
+        </button>
+
+        <p style="margin-top: 20px; font-size: 14px; color: var(--text-dim);">
+            <span id="toggleQuestion">Belum punya akun?</span> 
+            <span style="color: var(--secondary); cursor: pointer; font-weight: bold;" onclick="toggleAuthMode()" id="toggleText">Daftar</span>
+        </p>
+    </div>
+
+    <!-- SCREEN 2: MAIN DASHBOARD -->
+    <div id="app-content">
+        <div class="user-info">
+            <span id="user-display">Email: -</span>
+            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 10px;" onclick="handleLogout()">Logout</button>
         </div>
 
-        <!-- 1. PREPARATION -->
-        <section class="section-card">
-            <h2><i class="fa-solid fa-list-check"></i> 1. Sebelum Trading (Preparation)</h2>
-            <label>Kondisi Emosi (Centang yang dirasakan):</label>
-            <div class="checkbox-group">
-                <label class="check-item"><input type="checkbox"> Tenang</label>
-                <label class="check-item"><input type="checkbox"> Yakin</label>
-                <label class="check-item"><input type="checkbox"> Fokus</label>
-                <label class="check-item"><input type="checkbox"> FOMO</label>
-                <label class="check-item"><input type="checkbox"> Overthinking</label>
-                <label class="check-item"><input type="checkbox"> Lelah</label>
+        <div class="container">
+            <nav class="nav-tabs">
+                <button class="tab-btn active" onclick="openTab('psychology')">
+                    <i class="fa-solid fa-brain"></i> Psychology Journal
+                </button>
+                <button class="tab-btn" onclick="openTab('trading-log')">
+                    <i class="fa-solid fa-chart-line"></i> Technical Trade Log
+                </button>
+            </nav>
+
+            <div id="psychology" class="tab-content active">
+                <header class="header-section">
+                    <h1>Psychology Journal</h1>
+                    <p class="quote">"Disiplin adalah jembatan antara target dan pencapaian."</p>
+                </header>
+                
+                <form id="psyForm">
+                    <div class="grid-meta" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <div class="form-group"><label>Tanggal</label><input type="date" id="psyDate"></div>
+                        <div class="form-group">
+                            <label>Sesi</label>
+                            <select id="psySession"><option>ASIA</option><option>LONDON</option><option>NEW YORK</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Energi</label>
+                            <select id="psyEnergy"><option>Low</option><option>Medium</option><option>High</option></select>
+                        </div>
+                    </div>
+
+                    <section class="section-card">
+                        <h2><i class="fa-solid fa-heart"></i> Emosi Sebelum Entry</h2>
+                        <div class="checkbox-group" id="psyEmotions">
+                            <label class="check-item"><input type="checkbox" value="Tenang"> Tenang</label>
+                            <label class="check-item"><input type="checkbox" value="Yakin"> Yakin</label>
+                            <label class="check-item"><input type="checkbox" value="Fokus"> Fokus</label>
+                            <label class="check-item"><input type="checkbox" value="FOMO"> FOMO</label>
+                            <label class="check-item"><input type="checkbox" value="Gelisah"> Gelisah</label>
+                        </div>
+                    </section>
+                    
+                    <section class="section-card">
+                        <h2><i class="fa-solid fa-pen"></i> Narasi Psikologi</h2>
+                        <textarea id="psyNarrative" placeholder="Apa yang kamu rasakan hari ini? Apakah ada distraksi?"></textarea>
+                    </section>
+
+                    <button type="button" class="btn btn-primary" onclick="handleSavePsychology()">Simpan Jurnal Mental</button>
+                </form>
             </div>
+
+            <div id="trading-log" class="tab-content">
+                <header class="header-section">
+                    <h1 style="color: var(--secondary);">Trade Log</h1>
+                    <p class="quote">"Data tidak pernah bohong."</p>
+                </header>
+
+                <div class="section-card" style="border-left-color: var(--secondary);">
+                    <h2><i class="fa-solid fa-plus-circle"></i> Catat Trade</h2>
+                    <form id="tradeForm">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div class="form-group"><label>Tanggal</label><input type="date" id="tradeDate"></div>
+                            <div class="form-group"><label>Pair</label><input type="text" id="tradePair" placeholder="XAU/USD"></div>
+                            <div class="form-group"><label>Side</label><select id="tradeSide"><option>Long</option><option>Short</option></select></div>
+                            <div class="form-group"><label>Profit/Loss ($)</label><input type="text" id="tradePL" placeholder="+500"></div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="handleSaveTrade()">Simpan Trade</button>
+                    </form>
+                </div>
+
+                <div class="section-card" style="border-left-color: var(--secondary);">
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--accent); color: var(--secondary); text-align: left;">
+                                    <th style="padding:10px;">Tanggal</th>
+                                    <th style="padding:10px;">Pair</th>
+                                    <th style="padding:10px;">Side</th>
+                                    <th style="padding:10px;">P/L</th>
+                                    <th style="padding:10px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'trading-journal-app-v3';
+
+        let isLoginMode = true;
+
+        // AUTH LOGIC
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? 'Jurnal Psikologi' : 'Daftar Akun';
+            document.getElementById('authBtn').innerText = isLoginMode ? 'Masuk' : 'Daftar';
+            document.getElementById('toggleQuestion').innerText = isLoginMode ? 'Belum punya akun?' : 'Sudah punya akun?';
+            document.getElementById('toggleText').innerText = isLoginMode ? 'Daftar' : 'Login';
+        };
+
+        document.getElementById('authForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPassword').value;
+            const btn = document.getElementById('authBtn');
+
+            btn.disabled = true;
+            btn.innerText = "Memproses...";
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    alert("Akun berhasil dibuat! Anda otomatis masuk.");
+                }
+            } catch (err) { 
+                alert("Gagal: " + err.message); 
+                btn.disabled = false;
+                btn.innerText = isLoginMode ? 'Masuk' : 'Daftar';
+            }
+        };
+
+        window.handleGoogleLogin = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (err) { alert("Gagal Login Google: " + err.message); }
+        };
+
+        window.handleLogout = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            const authContainer = document.getElementById('auth-container');
+            const appContent = document.getElementById('app-content');
             
-            <div class="two-col" style="margin-top: 20px;">
-                <div class="form-group">
-                    <label>Setup yang Dicari</label>
-                    <textarea placeholder="Contoh: Breakout retest H1..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Rencana Risk & Target</label>
-                    <textarea placeholder="Risk 1%, Target 3%..."></textarea>
-                </div>
-            </div>
-        </section>
+            if (user) {
+                authContainer.style.display = 'none';
+                appContent.style.display = 'block';
+                document.getElementById('user-display').innerText = `Akun: ${user.email}`;
+                document.body.style.alignItems = 'flex-start';
+                setupListeners(user);
+            } else {
+                authContainer.style.display = 'block';
+                appContent.style.display = 'none';
+                document.body.style.alignItems = 'center';
+                // Reset button state if needed
+                const btn = document.getElementById('authBtn');
+                btn.disabled = false;
+                btn.innerText = isLoginMode ? 'Masuk' : 'Daftar';
+            }
+        });
 
-        <!-- 2. EXECUTION -->
-        <section class="section-card">
-            <h2><i class="fa-solid fa-crosshairs"></i> 2. Saat Entry (Execution)</h2>
-            <div class="two-col">
-                <div class="form-group">
-                    <label>Arah Trade</label>
-                    <select>
-                        <option>BUY</option>
-                        <option>SELL</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Sesuai Rencana?</label>
-                    <select>
-                        <option>YA</option>
-                        <option>TIDAK</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Alasan Entry (Plan atau Impuls?)</label>
-                <textarea></textarea>
-            </div>
-        </section>
+        // FIRESTORE LOGIC
+        function setupListeners(user) {
+            // Listener Trade Log
+            const tradeCol = collection(db, 'artifacts', appId, 'users', user.uid, 'trades');
+            onSnapshot(tradeCol, (snap) => {
+                const historyBody = document.getElementById('historyBody');
+                historyBody.innerHTML = '';
+                snap.forEach(tDoc => {
+                    const d = tDoc.data();
+                    const row = document.createElement('tr');
+                    row.style.borderBottom = '1px solid #334155';
+                    row.innerHTML = `
+                        <td style="padding:10px;">${d.date || '-'}</td>
+                        <td style="padding:10px;">${d.pair || '-'}</td>
+                        <td style="padding:10px; color:${d.side === 'Long' ? '#10b981' : '#ef4444'}">${d.side}</td>
+                        <td style="padding:10px; font-weight:bold">${d.pl}</td>
+                        <td style="padding:10px;"><i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;" onclick="window.deleteTrade('${tDoc.id}')"></i></td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }, (error) => {
+                console.error("Firestore error:", error);
+            });
+        }
 
-        <!-- 3. IN-TRADE -->
-        <section class="section-card">
-            <h2><i class="fa-solid fa-hourglass-start"></i> 3. Saat Trade Berjalan</h2>
-            <div class="checkbox-group">
-                <label class="check-item"><input type="checkbox"> Tetap Tenang</label>
-                <label class="check-item"><input type="checkbox"> Ingin Close Cepat</label>
-                <label class="check-item"><input type="checkbox"> Ingin Geser SL/TP</label>
-            </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Catatan selama floating</label>
-                <textarea></textarea>
-            </div>
-        </section>
+        window.handleSaveTrade = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            const data = {
+                date: document.getElementById('tradeDate').value,
+                pair: document.getElementById('tradePair').value,
+                side: document.getElementById('tradeSide').value,
+                pl: document.getElementById('tradePL').value,
+                timestamp: serverTimestamp()
+            };
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'trades'), data);
+                document.getElementById('tradeForm').reset();
+                document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
+            } catch (e) { alert(e.message); }
+        };
 
-        <!-- 4. REVIEW -->
-        <section class="section-card">
-            <h2><i class="fa-solid fa-square-check"></i> 4. Setelah Close (Review)</h2>
-            <div class="grid-meta">
-                <div class="form-group">
-                    <label>Hasil</label>
-                    <select>
-                        <option>PROFIT</option>
-                        <option>LOSS</option>
-                        <option>BREAK EVEN</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>RR Tercurah (R)</label>
-                    <input type="text" placeholder="Contoh: 2.5R">
-                </div>
-            </div>
-            <label>Kesalahan Mental:</label>
-            <div class="checkbox-group">
-                <label class="check-item"><input type="checkbox"> Overtrade</label>
-                <label class="check-item"><input type="checkbox"> Revenge Trade</label>
-                <label class="check-item"><input type="checkbox"> Tidak Disiplin SL</label>
-                <label class="check-item"><input type="checkbox"> Serakah</label>
-            </div>
-        </section>
+        window.handleSavePsychology = async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const emotions = Array.from(document.querySelectorAll('#psyEmotions input:checked')).map(cb => cb.value);
+            const data = {
+                date: document.getElementById('psyDate').value,
+                session: document.getElementById('psySession').value,
+                energy: document.getElementById('psyEnergy').value,
+                emotions: emotions,
+                narrative: document.getElementById('psyNarrative').value,
+                timestamp: serverTimestamp()
+            };
 
-        <!-- 5. EVALUASI -->
-        <section class="section-card">
-            <h2><i class="fa-solid fa-chart-line"></i> 5. Evaluasi & Rating</h2>
-            <div class="form-group">
-                <label>Pelajaran Penting Hari Ini</label>
-                <textarea></textarea>
-            </div>
-            <div class="rating-group">
-                <div class="rating-item">
-                    <label>Disiplin</label><br>
-                    <input type="number" min="1" max="10" value="0"> / 10
-                </div>
-                <div class="rating-item">
-                    <label>Mental</label><br>
-                    <input type="number" min="1" max="10" value="0"> / 10
-                </div>
-                <div class="rating-item">
-                    <label>Eksekusi</label><br>
-                    <input type="number" min="1" max="10" value="0"> / 10
-                </div>
-            </div>
-        </section>
-    </div>
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'psychology'), data);
+                alert("Jurnal Psikologi tersimpan di cloud!");
+                document.getElementById('psyNarrative').value = '';
+                document.querySelectorAll('#psyEmotions input').forEach(cb => cb.checked = false);
+            } catch (e) { alert(e.message); }
+        };
 
-    <div class="actions">
-        <button class="btn btn-clear" onclick="window.location.reload()">
-            <i class="fa-solid fa-trash"></i> Reset
-        </button>
-        <button class="btn btn-print" onclick="window.print()">
-            <i class="fa-solid fa-file-pdf"></i> Download PDF / Print
-        </button>
-    </div>
+        window.deleteTrade = async (id) => {
+            const user = auth.currentUser;
+            if (!user || !confirm("Hapus data ini?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'trades', id));
+            } catch (e) { alert(e.message); }
+        };
 
-    <script>
-        // Placeholder untuk logic tambahan di masa depan
-        console.log("Journal Ready to use!");
+        window.openTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+        };
+
+        const now = new Date().toISOString().split('T')[0];
+        document.getElementById('tradeDate').value = now;
+        document.getElementById('psyDate').value = now;
+
     </script>
 </body>
 </html>
