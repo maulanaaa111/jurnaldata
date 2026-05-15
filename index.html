@@ -95,10 +95,10 @@
         .btn-secondary { background: var(--secondary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
 
+        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px; color: var(--text-dim); }
+
         .divider { margin: 20px 0; display: flex; align-items: center; color: var(--text-dim); font-size: 12px; }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--accent); margin: 0 10px; }
-
-        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px; color: var(--text-dim); }
 
         @media print { .nav-tabs, .actions, .user-info { display: none; } }
     </style>
@@ -239,15 +239,23 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // CONFIG PROJECT JURNAL-DATA-ID-50986
+        const firebaseConfig = {
+            apiKey: "AIzaSyC65IM8g1lIsONtxEVH-8IcxCFjK4lNFUU",
+            authDomain: "jurnal-data-id-50986.firebaseapp.com",
+            projectId: "jurnal-data-id-50986",
+            storageBucket: "jurnal-data-id-50986.firebasestorage.app",
+            messagingSenderId: "483868497031",
+            appId: "1:483868497031:web:eade2b968f5744fea95422",
+            measurementId: "G-TLYM437NNM"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'trading-journal-app-v3';
-
+        
         let isLoginMode = true;
 
-        // AUTH LOGIC
         window.toggleAuthMode = () => {
             isLoginMode = !isLoginMode;
             document.getElementById('auth-title').innerText = isLoginMode ? 'Jurnal Psikologi' : 'Daftar Akun';
@@ -261,7 +269,6 @@
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
             const btn = document.getElementById('authBtn');
-
             btn.disabled = true;
             btn.innerText = "Memproses...";
 
@@ -270,10 +277,11 @@
                     await signInWithEmailAndPassword(auth, email, pass);
                 } else {
                     await createUserWithEmailAndPassword(auth, email, pass);
-                    alert("Akun berhasil dibuat! Anda otomatis masuk.");
+                    alert("Akun berhasil dibuat!");
                 }
             } catch (err) { 
-                alert("Gagal: " + err.message); 
+                alert("Auth Error: " + err.message); 
+            } finally {
                 btn.disabled = false;
                 btn.innerText = isLoginMode ? 'Masuk' : 'Daftar';
             }
@@ -291,7 +299,6 @@
         onAuthStateChanged(auth, (user) => {
             const authContainer = document.getElementById('auth-container');
             const appContent = document.getElementById('app-content');
-            
             if (user) {
                 authContainer.style.display = 'none';
                 appContent.style.display = 'block';
@@ -302,17 +309,12 @@
                 authContainer.style.display = 'block';
                 appContent.style.display = 'none';
                 document.body.style.alignItems = 'center';
-                // Reset button state if needed
-                const btn = document.getElementById('authBtn');
-                btn.disabled = false;
-                btn.innerText = isLoginMode ? 'Masuk' : 'Daftar';
             }
         });
 
-        // FIRESTORE LOGIC
         function setupListeners(user) {
-            // Listener Trade Log
-            const tradeCol = collection(db, 'artifacts', appId, 'users', user.uid, 'trades');
+            // Path: users/{uid}/trades
+            const tradeCol = collection(db, 'users', user.uid, 'trades');
             onSnapshot(tradeCol, (snap) => {
                 const historyBody = document.getElementById('historyBody');
                 historyBody.innerHTML = '';
@@ -329,9 +331,7 @@
                     `;
                     historyBody.appendChild(row);
                 });
-            }, (error) => {
-                console.error("Firestore error:", error);
-            });
+            }, (err) => console.error("Firestore Listen Error:", err));
         }
 
         window.handleSaveTrade = async () => {
@@ -345,16 +345,15 @@
                 timestamp: serverTimestamp()
             };
             try {
-                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'trades'), data);
+                await addDoc(collection(db, 'users', user.uid, 'trades'), data);
                 document.getElementById('tradeForm').reset();
                 document.getElementById('tradeDate').value = new Date().toISOString().split('T')[0];
-            } catch (e) { alert(e.message); }
+            } catch (e) { alert("Simpan Gagal: " + e.message); }
         };
 
         window.handleSavePsychology = async () => {
             const user = auth.currentUser;
             if (!user) return;
-            
             const emotions = Array.from(document.querySelectorAll('#psyEmotions input:checked')).map(cb => cb.value);
             const data = {
                 date: document.getElementById('psyDate').value,
@@ -364,20 +363,18 @@
                 narrative: document.getElementById('psyNarrative').value,
                 timestamp: serverTimestamp()
             };
-
             try {
-                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'psychology'), data);
-                alert("Jurnal Psikologi tersimpan di cloud!");
+                await addDoc(collection(db, 'users', user.uid, 'psychology'), data);
+                alert("Data Psikologi tersimpan di Firebase Console lo!");
                 document.getElementById('psyNarrative').value = '';
                 document.querySelectorAll('#psyEmotions input').forEach(cb => cb.checked = false);
-            } catch (e) { alert(e.message); }
+            } catch (e) { alert("Simpan Gagal: " + e.message); }
         };
 
         window.deleteTrade = async (id) => {
-            const user = auth.currentUser;
-            if (!user || !confirm("Hapus data ini?")) return;
+            if (!confirm("Hapus data ini?")) return;
             try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'trades', id));
+                await deleteDoc(doc(db, 'users', auth.currentUser.uid, 'trades', id));
             } catch (e) { alert(e.message); }
         };
 
